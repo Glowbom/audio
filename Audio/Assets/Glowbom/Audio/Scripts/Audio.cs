@@ -15,6 +15,8 @@ using UnityEngine;
  */
 public class Audio : MonoBehaviour
 {
+    public AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -44,13 +46,13 @@ public class Audio : MonoBehaviour
                 string[] times = path.Split('_');
                 string[] parts = times[0].Split('/');
                 audioDataLoader.audioData.keys.Add(parts[parts.Length - 1].Replace(".mp3", "").ToLower());
-            } else if ((path.Contains(".jpg") || path.Contains(".png")) && !audioDataLoader.audioData.pictures.Contains(path))
+            } else if ((path.Contains(".jpg") || path.Contains(".png")) && !audioDataLoader.audioData.pictures.Contains(path) && path.Contains("_"))
             {
                 string[] times = path.Split('_');
                 audioDataLoader.audioData.times.Add(times[times.Length - 2] + "_" + times[times.Length - 1]
                                         .Replace(".jpg", "").Replace(".png", ""));
                 audioDataLoader.audioData.pictures.Add(path);
-            } else if (path.Contains(".txt") && path.Contains("_") && !audioDataLoader.audioData.texts.Contains(path))
+            } else if (path.Contains(".txt") && path.Contains("_") && !audioDataLoader.audioData.texts.Contains(path) && path.Contains("_"))
             {
                 string[] times = path.Split('_');
                 audioDataLoader.audioData.textTimes.Add(times[times.Length - 2] + "_" + times[times.Length - 1]
