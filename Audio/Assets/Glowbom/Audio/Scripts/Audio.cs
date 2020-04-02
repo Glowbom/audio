@@ -43,7 +43,7 @@ public class Audio : MonoBehaviour
 
                 string[] times = path.Split('_');
                 string[] parts = times[0].Split('/');
-                audioDataLoader.audioData.keys.Add(parts[parts.Length - 1]);
+                audioDataLoader.audioData.keys.Add(parts[parts.Length - 1].Replace(".mp3", "").ToLower());
             } else if ((path.Contains(".jpg") || path.Contains(".png")) && !audioDataLoader.audioData.pictures.Contains(path))
             {
                 string[] times = path.Split('_');
