@@ -460,6 +460,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0303914d4734b989b145c151767ed0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 74419609}
+  image: {fileID: 2079004364}
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
