@@ -22,6 +22,9 @@ public class Audio : MonoBehaviour
     public Dictionary<string, Sprite> sprites;
     public Dictionary<string, List<string>> imageKeys;
     public Image image;
+    public Image background;
+    public GameObject grid;
+    public GameObject front;
 
     // Start is called before the first frame update
     void Start()
@@ -73,8 +76,12 @@ public class Audio : MonoBehaviour
 
         loadResources();
 
-        play("cat");
+    }
 
+    public void gridButtonClicked(string key)
+    {
+        grid.SetActive(false);
+        play(key);
     }
 
     string currentKey;
@@ -102,8 +109,10 @@ public class Audio : MonoBehaviour
 
             image.sprite = sprites[currentImages[currentImageIndex]];
         }
-        
-        if (audioSource.isPlaying)
+
+        //background.transform.Rotate(Vector3.forward * -10);
+
+        if (audioSource != null && audioSource.isPlaying)
         {
             await Task.Delay(TimeSpan.FromSeconds(1));
             ++currentSec;
@@ -114,6 +123,26 @@ public class Audio : MonoBehaviour
             }
             StartCoroutine("next");
         }
+        else
+        {
+            backToGrid();
+        }
+    }
+
+    public void backToGrid()
+    {
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+
+        grid.SetActive(true);
+    }
+
+    public void getStarted()
+    {
+        grid.SetActive(true);
+        front.SetActive(false);
     }
 
     public void play(string key)
@@ -123,6 +152,10 @@ public class Audio : MonoBehaviour
         currentMin = 0;
         currentSec = 0;
         currentImageIndex = 0;
+
+        AudioClip audioClip = Resources.Load<AudioClip>(key);
+        audioSource.clip = audioClip;
+        audioSource.Play();
 
         StartCoroutine("next");
     }
