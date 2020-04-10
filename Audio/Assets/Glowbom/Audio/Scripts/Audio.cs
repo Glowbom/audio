@@ -26,7 +26,8 @@ public class Audio : MonoBehaviour
     public GameObject grid;
     public GameObject about;
     public GameObject front;
-    public GameObject back;
+    public Button playerButton;
+    Monetization monetization = new Monetization();
 
     // Start is called before the first frame update
     void Start()
@@ -57,15 +58,13 @@ public class Audio : MonoBehaviour
                 string[] times = path.Split('_');
                 string[] parts = times[0].Split('/');
                 audioDataLoader.audioData.keys.Add(parts[parts.Length - 1].Replace(".mp3", "").ToLower());
-            }
-            else if ((path.Contains(".jpg") || path.Contains(".png")) && !audioDataLoader.audioData.pictures.Contains(path) && path.Contains("_"))
+            } else if ((path.Contains(".jpg") || path.Contains(".png")) && !audioDataLoader.audioData.pictures.Contains(path) && path.Contains("_"))
             {
                 string[] times = path.Split('_');
                 audioDataLoader.audioData.times.Add(times[times.Length - 2] + "_" + times[times.Length - 1]
                                         .Replace(".jpg", "").Replace(".png", ""));
                 audioDataLoader.audioData.pictures.Add(path);
-            }
-            else if (path.Contains(".txt") && path.Contains("_") && !audioDataLoader.audioData.texts.Contains(path) && path.Contains("_"))
+            } else if (path.Contains(".txt") && path.Contains("_") && !audioDataLoader.audioData.texts.Contains(path) && path.Contains("_"))
             {
                 string[] times = path.Split('_');
                 audioDataLoader.audioData.textTimes.Add(times[times.Length - 2] + "_" + times[times.Length - 1]
@@ -79,6 +78,8 @@ public class Audio : MonoBehaviour
         audioDataLoader.load();
 
         loadResources();
+
+        monetization.initAds();
 
     }
 
@@ -96,13 +97,13 @@ public class Audio : MonoBehaviour
 
     private async void next()
     {
-        Debug.Log(currentMin + ":" + currentSec);
+        //Debug.Log(currentMin + ":" + currentSec);
         if (currentImageIndex < currentImages.Count)
         {
             if (currentImageIndex < currentImages.Count - 1)
             {
                 string timeKey = currentMin.ToString("00") + "_" + currentSec.ToString("00");
-                Debug.Log("timeKey: " + timeKey);
+//                Debug.Log("timeKey: " + timeKey);
                 int timeIndex = audioDataLoader.audioData.pictures.IndexOf(currentImages[currentImageIndex + 1]);
 
                 if (timeKey.Equals(audioDataLoader.audioData.times[timeIndex]))
@@ -125,13 +126,22 @@ public class Audio : MonoBehaviour
                 currentSec = 0;
                 ++currentMin;
             }
-            StartCoroutine("next");
+            if (!isNextProccessing)
+            {
+                StartCoroutine("next");
+                isNextProccessing = true;
+            }
+        
         }
         else
         {
-            backToGrid();
+            //backToGrid();
         }
+
+        isNextProccessing = false;
     }
+
+    bool isNextProccessing = false;
 
     public void backToGrid()
     {
@@ -140,13 +150,19 @@ public class Audio : MonoBehaviour
             audioSource.Stop();
         }
 
+        playerButton.image.sprite = playerSprite;
+
         grid.SetActive(true);
+
+        monetization.tryShowAds();
     }
 
     public void getStarted()
     {
         grid.SetActive(true);
         front.SetActive(false);
+
+        monetization.showBanner();
     }
 
     public void aboutPressed()
@@ -166,15 +182,89 @@ public class Audio : MonoBehaviour
 
     public void openYouTube()
     {
-        Application.OpenURL("");
+        Application.OpenURL("https://www.youtube.com/channel/UCo1LM86YzjwzN9ubpucE0gQ");
+    }
+
+    public void playerPlayPause()
+    {
+        if (audioSource.isPlaying)
+        {
+            audioSource.Pause();
+            playerButton.image.sprite = playerPauseSprite;
+        } else
+        {
+            audioSource.Play();
+            playerButton.image.sprite = playerSprite;
+            StartCoroutine("next");
+        }
+    }
+
+    public async void playerPrev()
+    {
+        audioSource.Pause();
+        playerButton.image.sprite = playerPauseSprite;
+
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
+        if (audioDataLoader.audioData.keys.Contains(currentKey))
+        {
+            int index = audioDataLoader.audioData.keys.IndexOf(currentKey);
+
+            if (index == 0)
+            {
+                play(audioDataLoader.audioData.keys[audioDataLoader.audioData.keys.Count - 1]);
+            } else
+            {
+                --index;
+                play(audioDataLoader.audioData.keys[index]);
+            }
+        }
+    }
+
+    public async void playerNext()
+    {
+        audioSource.Pause();
+        playerButton.image.sprite = playerPauseSprite;
+
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
+        if (audioDataLoader.audioData.keys.Contains(currentKey))
+        {
+            int index = audioDataLoader.audioData.keys.IndexOf(currentKey);
+
+            if (index >= audioDataLoader.audioData.keys.Count - 1)
+            {
+                play(audioDataLoader.audioData.keys[0]);
+            }
+            else
+            {
+                ++index;
+                play(audioDataLoader.audioData.keys[index]);
+            }
+        }
+    }
+
+    public void openInstagram()
+    {
+        Application.OpenURL("https://www.instagram.com/galurinia/?hl=ru");
     }
 
     public void openWebLink()
     {
-        Application.OpenURL("");
+        Application.OpenURL("https://stihi.ru/avtor/idioma");
     }
 
+    public void openOtherApps()
+    {
+#if UNITY_ANDROID
+        Application.OpenURL("https://play.google.com/store/apps/developer?id=Ilins+House");
+#elif UNITY_IPHONE
+        Application.OpenURL("https://apps.apple.com/us/developer/maria-ilina/id1474683806#see-all/i-phonei-pad-apps");
+#else
+        Application.OpenURL("https://play.google.com/store/apps/developer?id=Ilins+House");
+#endif
 
+    }
 
     public void play(string key)
     {
@@ -187,13 +277,20 @@ public class Audio : MonoBehaviour
         AudioClip audioClip = Resources.Load<AudioClip>(key);
         audioSource.clip = audioClip;
         audioSource.Play();
+        playerButton.image.sprite = playerSprite;
 
         StartCoroutine("next");
     }
 
+    private Sprite playerSprite;
+    private Sprite playerPauseSprite;
+
     private void loadResources()
     {
         sprites = new Dictionary<string, Sprite>();
+
+        playerSprite = Resources.Load<Sprite>("Engine/player");
+        playerPauseSprite = Resources.Load<Sprite>("Engine/player_pause");
 
         foreach (string path in audioDataLoader.audioData.pictures)
         {
@@ -201,6 +298,7 @@ public class Audio : MonoBehaviour
             {
                 string[] stringSeparators = { "Resources/" };
                 string[] parts = path.Split(stringSeparators, StringSplitOptions.None);
+                
                 sprites.Add(path, Resources.Load<Sprite>(parts[parts.Length - 1].Replace(".png", "").Replace(".jpg", "")));
 
             }
@@ -232,6 +330,6 @@ public class Audio : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 }
