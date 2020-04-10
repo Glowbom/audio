@@ -164,6 +164,11 @@ public class Audio : MonoBehaviour
         front.SetActive(true);
     }
 
+    public void openYouTube()
+    {
+        Application.OpenURL("");
+    }
+
 
     public void play(string key)
     {
