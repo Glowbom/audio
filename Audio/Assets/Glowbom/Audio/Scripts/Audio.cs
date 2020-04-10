@@ -169,6 +169,12 @@ public class Audio : MonoBehaviour
         Application.OpenURL("");
     }
 
+    public void openWebLink()
+    {
+        Application.OpenURL("");
+    }
+
+
 
     public void play(string key)
     {
