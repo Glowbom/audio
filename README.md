@@ -4,8 +4,9 @@ Audio game allows you to turn audio tracks and images into a video game.
 
 ## Setup instructions
 
-1. Add mp3 or wav files into resource folder
-2. Pictures file name must have the same name as sounds file name supplemented with minute and second. For example, if filename is **music.mp3**, one of the picture names that appears at 1 min 34 sec could be **music_1_34.jpg**.
+1. Add mp3 or wav files into the resource folder
+2. The pictures file name must have the same name as sounds file name supplemented with minute and second. For example, if filename is **music.mp3**, one of the picture names that appear at 1 min 34 sec could be **music_1_34.jpg**.
+
 
 ### Example app
 
