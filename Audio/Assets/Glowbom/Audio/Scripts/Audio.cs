@@ -33,6 +33,8 @@ public class Audio : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        
         audioDataLoader = new AudioDataLoader();
         audioDataLoader.audioData = new AudioData();
         audioDataLoader.audioData.sounds = new List<string>();
