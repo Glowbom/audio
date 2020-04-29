@@ -26,6 +26,7 @@ public class Audio : MonoBehaviour
     public GameObject grid;
     public GameObject about;
     public GameObject front;
+    public GameObject grid2;
     public Button playerButton;
     Monetization monetization = new Monetization();
 
@@ -180,6 +181,18 @@ public class Audio : MonoBehaviour
         front.SetActive(true);
     }
 
+    public void gridNextPressed()
+    {
+        grid2.SetActive(true);
+    }
+
+    public void grid2BackPressed()
+    {
+        grid2.SetActive(false);
+    }
+
+
+
     public void openYouTube()
     {
         Application.OpenURL("https://www.youtube.com/channel/UCo1LM86YzjwzN9ubpucE0gQ");
@@ -226,20 +239,23 @@ public class Audio : MonoBehaviour
         audioSource.Pause();
         playerButton.image.sprite = playerPauseSprite;
 
-        await Task.Delay(TimeSpan.FromSeconds(1));
-
-        if (audioDataLoader.audioData.keys.Contains(currentKey))
+        if (!monetization.tryShowAds())
         {
-            int index = audioDataLoader.audioData.keys.IndexOf(currentKey);
+            await Task.Delay(TimeSpan.FromSeconds(1));
 
-            if (index >= audioDataLoader.audioData.keys.Count - 1)
+            if (audioDataLoader.audioData.keys.Contains(currentKey))
             {
-                play(audioDataLoader.audioData.keys[0]);
-            }
-            else
-            {
-                ++index;
-                play(audioDataLoader.audioData.keys[index]);
+                int index = audioDataLoader.audioData.keys.IndexOf(currentKey);
+
+                if (index >= audioDataLoader.audioData.keys.Count - 1)
+                {
+                    play(audioDataLoader.audioData.keys[0]);
+                }
+                else
+                {
+                    ++index;
+                    play(audioDataLoader.audioData.keys[index]);
+                }
             }
         }
     }

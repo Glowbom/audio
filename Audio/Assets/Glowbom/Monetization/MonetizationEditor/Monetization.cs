@@ -21,7 +21,7 @@ public class Monetization
     public string iOSBanner;
     public string iOSInterstitial;
     public string iOSAppId;
-    public int showAdsIn = 6;
+    public int showAdsIn = 5;
 
     private int adCounter = 0;
  #if GLOWBOM_ADS
@@ -96,7 +96,9 @@ public class Monetization
         {
             interstitial.Show();
 
-            showBanner();
+            requestInterstitial();
+
+            //showBanner();
         }
 #endif
     }
@@ -131,17 +133,20 @@ public class Monetization
 #endif
     }
 
-    public void tryShowAds()
+    public bool tryShowAds()
     {
         ++adCounter;
         if (adCounter % showAdsIn == 0)
         {
             showInterstitial();
+            return true;
         }
 
         if (adCounter > 100)
         {
             adCounter = 0;
         }
+
+        return false;
     }
 }
