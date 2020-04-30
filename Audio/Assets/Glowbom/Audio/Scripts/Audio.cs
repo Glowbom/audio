@@ -139,6 +139,7 @@ public class Audio : MonoBehaviour
         else
         {
             //backToGrid();
+            playerNext();
         }
 
         isNextProccessing = false;
